@@ -1,0 +1,28 @@
+<p>gastos works!</p>
+
+<div>
+    <h2>Lista de Gastos</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Fecha Registro</th>
+          <th>Monto</th>
+          <th>Descripción</th>
+          <th>Categoría</th>
+          <th>Opciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let gasto of gastos">
+          <td>{{ gasto.fechaRegistro }}</td>
+          <td>{{ gasto.monto }}</td>
+          <td>{{ gasto.descripcion }}</td>
+          <td>{{ gasto.categoria }}</td>
+          <td>
+            <button (click)="editGasto(gasto)">Editar</button>
+            <button (click)="deleteGasto(gasto.idGastos)">Eliminar</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
