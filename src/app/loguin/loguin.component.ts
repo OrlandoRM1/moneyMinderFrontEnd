@@ -3,6 +3,9 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from '../auth.service';
 import { Router } from '@angular/router';
+import { MatDialog } from '@angular/material/dialog';
+import { MessageDialogComponent } from '../message-dialog/message-dialog.component';
+import { LoginResponse } from './LoginResponse';
 
 @Component({
   selector: 'app-loguin',
@@ -16,25 +19,43 @@ export class LoguinComponent {
   username: string = '';
   password: string = '';
   errorMessage: string = '';
+  isLoading: boolean = false;
 
-  constructor(private authService: AuthService, private router: Router) {}
+  constructor(private authService: AuthService, private router: Router, private dialog: MatDialog) {}
 
-  login() {
-    this.authService.login(this.username, this.password).subscribe(
-      response => {
-        // Maneja la respuesta exitosa del servidor
-        console.log('Login exitoso', response);
-        localStorage.setItem('authToken', response.token);
+  onSubmit(): void {
+    this.isLoading = true;
+    if (!this.username || !this.password) {
+      this.isLoading = false;
+      this.showDialog('FAILED', 'Usuario y contraseña son requeridos.');
+      return;
+    }
 
-        // Redirigir al usuario a la página de gastos
-        this.router.navigate(['/gastos']);
-      },
-      error => {
-        // Maneja los errores de autenticación
-        console.error('Error de login', error);
-        this.errorMessage = 'Usuario o contraseña incorrectos';
-      }
-    );
+      this.authService.loginAnt(this.username, this.password).subscribe(
+        (response: LoginResponse) => {
+          this.isLoading = false;
+          if (response.exist) {
+            localStorage.setItem('token', response.token);
+            this.router.navigate(['/gastos']); 
+          } else {
+            this.isLoading = false;
+            this.router.navigate(['/']);
+          }
+        },
+        (error: any) => { 
+          this.showDialog('FAILED', 'Usuario o contraseña inválidos.');
+          this.isLoading = false;
+          ;
+        }
+      );
+    
+  }
+
+  showDialog(title: string, content: string, details?: string[]): void {
+    this.dialog.open(MessageDialogComponent, {
+      width: '300px',
+      data: { messageTitle: title, messageContent: content, details: details }
+    });
   }
 
 }

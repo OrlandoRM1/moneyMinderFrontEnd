@@ -1,12 +1,15 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { HttpClient, HttpHeaders, HttpErrorResponse } from '@angular/common/http';
+import { Observable, throwError } from 'rxjs';
 import { Gasto } from './gastos/Gasto';
+import { LoginResponse } from './loguin/LoginResponse';
+import { catchError, map } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
+  private isAuthenticated = false;
 
   private apiUrl = 'http://localhost:8080';
   constructor(private http: HttpClient) { }
@@ -18,7 +21,41 @@ export class AuthService {
     return this.http.post<any>(`${this.apiUrl}/loguin/authenticate`, body, { headers });
   }
 
+  loginAnt(username: string, password: string): Observable<LoginResponse> {
+    const url = `${this.apiUrl}/loguin/loginAntiDirectory`;
+    const body = { username, password };
+    return this.http.post<LoginResponse>(url, body).pipe(
+      map(response => {
+        if (response.exist) {
+          localStorage.setItem('token', response.token);
+          this.setAuthStatus(true);
+        } else {
+          this.setAuthStatus(false);
+          return response;
+        }
+        return response;
+      }),
+      catchError((error: HttpErrorResponse) => {
+        let errorMsg = 'Error desconocido';
+        if (error.status === 401) {
+          errorMsg = 'Credenciales inválidas';
+        } else {
+          errorMsg = error.error.message || 'Error en el servidor';
+        }
+        return throwError(errorMsg);
+      })
+    );
+  }
+
   getGastos(): Observable<Gasto[]> {
     return this.http.get<Gasto[]>(`${this.apiUrl}/Gast/getAllGastos`);
+  }
+
+  setAuthStatus(status: boolean): void {
+    this.isAuthenticated = status;
+  }
+
+  getAuthStatus(): boolean {
+    return this.isAuthenticated;
   }
 }
