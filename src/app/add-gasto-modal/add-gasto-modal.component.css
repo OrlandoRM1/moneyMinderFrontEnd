@@ -1,0 +1,32 @@
+/* add-gasto-modal.component.css */
+
+.dialog-title {
+  text-align: center;
+  margin-bottom: 16px;
+}
+
+.form-fields {
+  display: grid;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.mat-form-field {
+  width: 50%;
+}
+
+.form-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+/* Agregar estilo específico para los botones */
+button.mat-raised-button {
+  margin-right: 8px;
+}
+
+/* Asegurar que el campo de monto tenga un formato de moneda */
+input[type="number"] {
+  text-align: right;
+}

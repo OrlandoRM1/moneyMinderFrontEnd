@@ -21,4 +21,13 @@ table {
   tr:hover {
     background-color: #ddd;
   }
+
+  .fab-button {
+    position: fixed;
+    bottom: 16px;
+    right: 16px;
+    z-index: 1000; /* Asegúrate de que el botón esté encima de otros elementos */
+  }
+
+  
   

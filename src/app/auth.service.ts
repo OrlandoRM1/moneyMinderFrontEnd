@@ -47,6 +47,21 @@ export class AuthService {
     );
   }
 
+  createGasto(gasto: Gasto): Observable<Gasto> {
+    const url = `${this.apiUrl}/Gast/createGasto`;
+    return this.http.post<Gasto>(url, gasto).pipe(
+      catchError((error: HttpErrorResponse) => {
+        let errorMsg = 'Error desconocido';
+        if (error.status === 401) {
+          errorMsg = 'No autorizado';
+        } else {
+          errorMsg = error.error.message || 'Error en el servidor';
+        }
+        return throwError(errorMsg);
+      })
+    );
+  }
+
   getGastos(): Observable<Gasto[]> {
     return this.http.get<Gasto[]>(`${this.apiUrl}/Gast/getAllGastos`);
   }
